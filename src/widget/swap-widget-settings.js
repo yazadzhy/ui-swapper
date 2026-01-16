@@ -3,8 +3,8 @@ import {Asset, Keypair} from '@stellar/stellar-sdk'
 import {AssetDescriptor} from '@stellar-expert/asset-descriptor'
 import {fromStroops, toStroops} from '@stellar-expert/formatter'
 import {Mediator, StellarBrokerClient} from '@stellar-broker/client'
-import {signTx} from './wallet-kit'
 import accountLedgerData from './account-ledger-data'
+import walletProvider from './wallet-provider'
 
 const partnerKey = '8h4giZyS7ydJKfN7C2uZGUDevkxdPr5gpJHF39M1wSJhWRoqCgDQw7a85mhmG4zSAX'
 const dummyBrokerAccount = 'GBW7T3IVZWUF5AEUYUFG5FXBFJNEJCJYEMCG23NIZI36CNUBOPLDKBPA'
@@ -320,7 +320,7 @@ export default class SwapWidgetSettings {
 
     signSwapTx = async (tx) => {
         this.onUpdate('confirmation')
-        const signedTx = await signTx(tx)
+        const signedTx = await walletProvider.signTx(tx)
         this.inProgress = true
         this.onUpdate('ready')
         notify({type: 'info', message: 'Swapping, please do not leave this page'})

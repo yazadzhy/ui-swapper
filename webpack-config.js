@@ -12,6 +12,7 @@ module.exports = initWebpackConfig({
     staticFilesPath: ['./src/static/'],
     define: {
         appVersion: pkgInfo.version,
+        walletConnectProjectId: process.env.WALLET_CONNECT_PROJECT_ID,
         managementApiOrigin: process.env.API_ORIGIN || 'https://management.stellar.broker'
     },
     devServer: {

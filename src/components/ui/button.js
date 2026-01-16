@@ -12,12 +12,14 @@ export const Button = React.memo(function Button({
                                                      clear,
                                                      stackable,
                                                      small,
+                                                     big,
                                                      disabled,
                                                      className,
                                                      children,
                                                      ...op}) {
     const c = cn('button', {
         small,
+        big,
         disabled,
         'button-block': block,
         'button-outline': outline,

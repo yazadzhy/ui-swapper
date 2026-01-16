@@ -35,6 +35,53 @@
     outline: 0;
     border: none;
   }
+
+  .wallet-icons {
+    display: inline-flex;
+    height: 1.75rem;
+    padding-right: 0.5em;
+    //
+    //.wallet-icon {
+    //  display: inline-block;
+    //  width: 1.75rem;
+    //  height: 1.75rem;
+    //  margin-left: -.75em;
+    //  border-radius: 50%;
+    //  border: 1px solid $gray;
+    //
+    //  //&.wallet-connect {
+    //  //  background: #fff url("img/widget/wallet-connect.png") center no-repeat;
+    //  //  background-size: 70%;
+    //  //}
+    //  //
+    //  //&.lobstr {
+    //  //  background: #fff url("img/widget/lobstr.png") center no-repeat;
+    //  //  background-size: 60%;
+    //  //}
+    //  //
+    //  //&.freighter {
+    //  //  background: #654cd8 url("img/widget/freighter.png") center no-repeat;
+    //  //  background-size: contain;
+    //  //}
+    //  //
+    //  //&.albedo {
+    //  //  background: #fff url("img/widget/albedo.svg") center no-repeat;
+    //  //  background-size: 70%;
+    //  //}
+    //}
+
+    img {
+      width: 1.75rem;
+      height: 1.75rem;
+      background: #fff;
+      border-radius: 100%;
+      margin-left: -.75em;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
 }
 
 @media (max-width: $responsive-mobile-browser-width) {

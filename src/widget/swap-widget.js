@@ -3,15 +3,16 @@ import {StrKey} from '@stellar/stellar-sdk'
 import {Mediator} from '@stellar-broker/client'
 import {formatWithAutoPrecision} from '@stellar-expert/formatter'
 import {Button, AssetSelector, Dropdown} from '../components/ui'
-import {setWallet, signTx} from './wallet-kit'
+import ConnectWalletView from './connect-wallet-view'
+import WalletConnectionView from './wallet-connection-view'
+import walletProvider from './wallet-provider'
 import accountLedgerData from './account-ledger-data'
 import AvailableAmountLink from './available-amount-link-view'
 import SwapWidgetSettings from './swap-widget-settings'
 import './swap-widget.scss'
-import ConnectWalletView, {connectWallets} from './connect-wallet-view'
 
 export const SwapWidget = function SmartSwapWidget({className}) {
-    const connectedAddress = getActiveAccount()
+    const connectedAddress = accountLedgerData.address || walletProvider.getActiveAccount()
     const [widgetStatus, setWidgetStatus] = useState('ready')
     const [isReverseAssets, setIsReverseAssets] = useState(false)
     const [update, setUpdate] = useState(0)
@@ -43,7 +44,7 @@ export const SwapWidget = function SmartSwapWidget({className}) {
         notify({type: 'info', message: 'Sending funds to your account, please wait'})
         while (Mediator.hasObsoleteMediators(address)) {
             try {
-                await Mediator.disposeObsoleteMediators(address, signTx)
+                await Mediator.disposeObsoleteMediators(address, walletProvider.signTx)
             } catch (e) {
                 console.error(e)
             }
@@ -56,10 +57,8 @@ export const SwapWidget = function SmartSwapWidget({className}) {
 
     useEffect(() => {
         if (Mediator.hasObsoleteMediators(connectedAddress)) {
-            notify({
-                type: 'info', message: <span>Found unfinished swap<br/>
-                <a href="#" onClick={() => retrieveFunds(connectedAddress)}>Return locked
-                        funds</a> to your account?</span>
+            notify({type: 'info', message: <span>Found unfinished swap<br/>
+                <a href="#" onClick={() => retrieveFunds(connectedAddress)}>Return locked funds</a> to your account?</span>
             })
         }
     }, [connectedAddress, retrieveFunds])
@@ -69,10 +68,7 @@ export const SwapWidget = function SmartSwapWidget({className}) {
     }, [accountLedgerData.balances[settings.asset[1]]])
 
     const startSwap = useCallback(() => {
-        setWidgetStatus('confirmation')
-        connectWallets(setWidgetStatus)
-            .then(() => setWidgetStatus('authenticated'))
-            .catch(() => setWidgetStatus('ready'))
+        setWidgetStatus('auth')
     }, [])
 
     const initSwap = useCallback(() => {
@@ -87,7 +83,7 @@ export const SwapWidget = function SmartSwapWidget({className}) {
     return <div className={`swap-widget ${className}`}>
         <div style={{minHeight: '1.7em'}} className="dual-layout">
             <div style={{margin: '0 auto 0 0'}}>
-                <ConnectWalletView/>
+                <ConnectWalletView widgetStatus={widgetStatus} updateStatus={setWidgetStatus}/>
             </div>
             {!!connectedAddress && <AvailableAmountLink settings={settings}/>}
         </div>
@@ -130,6 +126,7 @@ export const SwapWidget = function SmartSwapWidget({className}) {
                         <span className="loader" style={{margin: '0 auto'}}/> : 'Swap'}</SwapButton> :
                 <SwapButton status={widgetStatus} onClick={startSwap}>Start swap</SwapButton>}
         </div>
+        <WalletConnectionView widgetStatus={widgetStatus} updateStatus={setWidgetStatus}/>
     </div>
 }
 
@@ -156,18 +153,4 @@ function SwapAmount({amount, asset, onChange, onAssetChange, placeholder, classN
         <input value={amount || ''} placeholder="0" {...props}/>
         <AssetSelector value={asset} predefinedAssets={predefinedAssets} onChange={onAssetChange} restricted/>
     </div>
-}
-
-function getActiveAccount() {
-    const address = localStorage.getItem('activeAccount')
-    try {
-        const usedWalletsIds = JSON.parse(localStorage.getItem('@StellarWalletsKit/usedWalletsIds') || '')
-        setWallet(usedWalletsIds[0])
-    } catch (e) {
-        return null
-    }
-    if (!accountLedgerData.address && StrKey.isValidEd25519PublicKey(address)) {
-        accountLedgerData.init(address)
-    }
-    return accountLedgerData.address
 }

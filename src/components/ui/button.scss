@@ -49,6 +49,19 @@ button {
     line-height: 2.4em;
   }
 
+  &.big {
+    display: flex!important;
+    justify-content: center;
+    align-items: center;
+    height: 5.4em;
+    padding: 1em;
+
+    &:hover {
+      background: transparent!important;
+      color: #0059FF!important;
+    }
+  }
+
   &:hover {
     text-decoration: none;
     outline-color: rgba(1,83,225, .25);
