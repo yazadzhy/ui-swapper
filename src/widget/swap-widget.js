@@ -3,7 +3,7 @@ import {StrKey} from '@stellar/stellar-sdk'
 import {Mediator} from '@stellar-broker/client'
 import {formatWithAutoPrecision} from '@stellar-expert/formatter'
 import {Button, AssetSelector, Dropdown} from '../components/ui'
-import {setWallet, signTx} from './wallet-kit'
+import {isConnected, setWallet, signTx} from './wallet-kit'
 import accountLedgerData from './account-ledger-data'
 import AvailableAmountLink from './available-amount-link-view'
 import SwapWidgetSettings from './swap-widget-settings'
@@ -59,9 +59,9 @@ export const SwapWidget = function SmartSwapWidget({className}) {
     useEffect(() => {
         if (Mediator.hasObsoleteMediators(connectedAddress)) {
             notify({
-                type: 'info', message: <span>Found unfinished swap<br/>
-                <a href="#" onClick={() => retrieveFunds(connectedAddress)}>Return locked
-                        funds</a> to your account?</span>
+                type: 'info',
+                message: <span>Found unfinished swap<br/>
+                    <a href="#" onClick={() => retrieveFunds(connectedAddress)}>Return locked funds</a> to your account?</span>
             })
         }
     }, [connectedAddress, retrieveFunds])
@@ -73,7 +73,10 @@ export const SwapWidget = function SmartSwapWidget({className}) {
             .catch(() => setWidgetStatus('ready'))
     }, [])
 
-    const initSwap = useCallback(() => {
+    const initSwap = useCallback(async () => {
+        const isWalletConnected = await isConnected(connectedAddress)
+        if (!isWalletConnected)
+            return null
         settings.confirmSwap(connectedAddress)
             .catch(err => {
                 console.error(err)
