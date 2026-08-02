@@ -9,6 +9,8 @@ import {resizeImage} from './image-resize'
 
 export default function PartnerEditForm({id}) {
     const [settings, setSettings] = usePartnerSettings(id)
+    //on the add form the hook loads the current admin instead, so this only ever applies to an existing partner
+    const auth0Account = !!id && settings.authProvider === 'auth0'
 
     const changeSettings = useCallback((field, val) => {
         setSettings(prev => ({...prev, [field]: val}))
@@ -37,8 +39,8 @@ export default function PartnerEditForm({id}) {
         <div className="row">
             <div className="column column-50">
                 <div className="space">
-                    <p className="label text-small">Partner email</p>
-                    <input value={settings.email || ''} data-field="email" onChange={changeFieldSettings} onKeyDown={onKeyDown} maxLength={40} ref={useAutoFocusRef} className="styled-input"/>
+                    <p className="label text-small">Partner email{auth0Account && ' (managed by Auth0)'}</p>
+                    <input value={settings.email || ''} data-field="email" onChange={changeFieldSettings} onKeyDown={onKeyDown} maxLength={40} ref={useAutoFocusRef} className="styled-input" disabled={auth0Account}/>
                 </div>
             </div>
             <div className="column column-50">
@@ -64,7 +66,7 @@ export default function PartnerEditForm({id}) {
             </PartnerFeeParam>
         </div>
         <div className="row row-right space">
-            {id && <div className="column column-50">
+            {id && !auth0Account && <div className="column column-50">
                 <Button stackable secondary href={`/admin/partner/${id}/password`}>Change password</Button>
             </div>}
             <div className="column column-50 text-right">

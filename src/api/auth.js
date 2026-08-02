@@ -15,7 +15,8 @@ export function getAuth() {
         inactive: parsed.inactive,
         id: parsed.id,
         roles: parsed.roles,
-        email: parsed.email
+        email: parsed.email,
+        authProvider: parsed.authProvider || 'password'
     }
 }
 

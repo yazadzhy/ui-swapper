@@ -4,6 +4,7 @@ import {usePartnerSettings} from '../../utils/hooks/partner-settings'
 import {Loader} from '../../components/ui/loader'
 import EmailEditForm from '../../partner/settings/email-edit-form'
 import PasswordEditForm from '../../partner/settings/password-edit-form'
+import Auth0MethodView from '../../partner/settings/auth0-method-view'
 import AccountDeleteView from '../../partner/settings/account-delete-view'
 
 export default function PartnerDashboardPage() {
@@ -11,7 +12,7 @@ export default function PartnerDashboardPage() {
         title: 'Settings',
         description: 'Change partner settings.'
     })
-    const [partnerInfo] = usePartnerSettings()
+    const [partnerInfo, setPartnerInfo] = usePartnerSettings()
 
     return <div>
         <h3>Settings</h3>
@@ -19,8 +20,12 @@ export default function PartnerDashboardPage() {
         <div className="hr double-space"/>
         <div className="row">
             <div className="column column-66">
-                <EmailEditForm/>
-                <PasswordEditForm/>
+                {/*credentials depend on the linked identity, so nothing is rendered until it is known*/}
+                {partnerInfo.id ? <>
+                    <EmailEditForm partnerInfo={partnerInfo}/>
+                    <PasswordEditForm partnerInfo={partnerInfo}/>
+                    <Auth0MethodView partnerInfo={partnerInfo} onChange={setPartnerInfo}/>
+                </> : <Loader/>}
             </div>
         </div>
         <div className="row">

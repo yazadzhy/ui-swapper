@@ -2,6 +2,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import {navigation} from './utils/navigation'
 import {createToastNotificationsContainer} from './components/toast/toast-notifications-block'
+import AppAuth0Provider from './layout/auth0-provider'
 import Router from './router'
 import './styles/styles.scss'
 
@@ -11,7 +12,7 @@ bindClickNavHandler(appContainer)
 
 createToastNotificationsContainer()
 
-render(<Router history={navigation.history}/>, appContainer)
+render(<AppAuth0Provider><Router history={navigation.history}/></AppAuth0Provider>, appContainer)
 
 function bindClickNavHandler(container) {
     container.addEventListener('click', e => {

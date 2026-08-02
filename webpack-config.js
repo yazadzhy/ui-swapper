@@ -11,8 +11,7 @@ module.exports = initWebpackConfig({
     outputPath: './distr/',
     staticFilesPath: ['./src/static/'],
     define: {
-        appVersion: pkgInfo.version,
-        managementApiOrigin: process.env.API_ORIGIN || 'https://management.stellar.broker'
+        appVersion: pkgInfo.version
     },
     devServer: {
         host: '0.0.0.0',

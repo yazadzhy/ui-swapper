@@ -1,4 +1,5 @@
 import React, {useCallback, useState} from 'react'
+import {useAuth0} from '@auth0/auth0-react'
 import {navigation} from '../../utils/navigation'
 import {performApiCall} from '../../api/api-call'
 import {logout} from '../../api/auth'
@@ -7,6 +8,7 @@ import {Dialog} from '../../components/ui/dialog'
 
 export default function AccountDeleteView() {
     const [isOpen, setIsOpen] = useState(false)
+    const {isAuthenticated, logout: auth0Logout} = useAuth0()
 
     const toggleDialog = useCallback(() => setIsOpen(prev => !prev), [])
 
@@ -16,11 +18,13 @@ export default function AccountDeleteView() {
                 if (result.error)
                     return notify({type: 'error', message: 'Failed to delete account. ' + result.error})
 
-                navigation.navigate('/')
                 logout()
                 notify({type: "success", message: "Account deleted successfully"})
+                if (isAuthenticated)
+                    return auth0Logout({logoutParams: {returnTo: window.location.origin}})
+                navigation.navigate('/')
             })
-    }, [])
+    }, [isAuthenticated, auth0Logout])
 
     return <>
         <div>

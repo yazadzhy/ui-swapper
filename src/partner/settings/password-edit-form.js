@@ -3,6 +3,7 @@ import {performApiCall} from '../../api/api-call'
 import {Button} from '../../components/ui/button'
 import {Dialog} from '../../components/ui/dialog'
 import {useAutoFocusRef} from '../../utils/hooks/auto-focus-ref'
+import ManagedExternallyView from './managed-externally-view'
 
 function validationPassword({password, newPassword, confirm}) {
     if (!password || !confirm || newPassword === password)
@@ -10,7 +11,7 @@ function validationPassword({password, newPassword, confirm}) {
     return newPassword === confirm && newPassword.length >= 8
 }
 
-export default function PasswordEditForm() {
+export default function PasswordEditForm({partnerInfo}) {
     const [credentials, setCredentials] = useState()
     const [isValid, setIsValid] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
@@ -44,6 +45,10 @@ export default function PasswordEditForm() {
         }
     }, [isValid])
 
+    //an Auth0 account has no local password, and the one it does have is changed in Auth0 rather than here
+    if (partnerInfo.authProvider === 'auth0')
+        return <ManagedExternallyView title="Password" provider={partnerInfo.identity?.provider}/>
+
     return <div>
         <div className="dual-layout middle double-space">
             <div className="text-tiny">
@@ -75,12 +80,12 @@ export default function PasswordEditForm() {
     </div>
 }
 
-function PasswordSetting({title, name, value, onChange, onKeyDown}) {
+function PasswordSetting({title, name, credentials, onChange, onKeyDown}) {
     const changeValue = useCallback(e => onChange(name, e.target.value), [onChange])
 
     return <div className="micro-space">
         <p className="label text-small">{title}</p>
-        <input type="password" value={value} onChange={changeValue} onKeyDown={onKeyDown}
+        <input type="password" value={credentials?.[name] || ''} onChange={changeValue} onKeyDown={onKeyDown}
                ref={(name === 'password') ? useAutoFocusRef : null} className="styled-input"/>
     </div>
 }
